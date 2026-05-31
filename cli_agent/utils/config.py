@@ -1,6 +1,0 @@
-import os
-
-DEFAULT_API_URL = "http://localhost:8000"
-ENV_API_URL = os.getenv("SPRINGFORGE_API_URL", DEFAULT_API_URL)
-REQUEST_TIMEOUT = 120
-MAX_RETRIES = 3
