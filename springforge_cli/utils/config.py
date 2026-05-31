@@ -1,0 +1,7 @@
+import os
+
+DEFAULT_API_URL = "http://localhost:8000"
+ENV_API_URL = os.getenv("SPRINGFORGE_API_URL", DEFAULT_API_URL)
+REQUEST_TIMEOUT = 120
+MAX_RETRIES = 3
+ACTIVE_MODEL = os.getenv("SPRINGFORGE_MODEL", "gemini-2.5-flash")
