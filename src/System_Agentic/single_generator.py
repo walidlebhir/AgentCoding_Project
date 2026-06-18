@@ -78,7 +78,14 @@ def _parse_files(text: str) -> list[dict]:
 def _write_project(project_dir: str, files: list[dict]) -> int:
     written = 0
     for f in files:
-        abs_path = os.path.join(project_dir, f["path"])
+        # Sanitization: prevent directory traversal
+        path = f["path"].replace("..", "").lstrip("/")
+        abs_path = os.path.join(project_dir, path)
+        
+        # Ensure the path is still within project_dir
+        if not os.path.abspath(abs_path).startswith(os.path.abspath(project_dir)):
+            continue
+
         parent = os.path.dirname(abs_path)
         os.makedirs(parent, exist_ok=True)
         with open(abs_path, "w", encoding="utf-8") as fh:
@@ -88,6 +95,20 @@ def _write_project(project_dir: str, files: list[dict]) -> int:
 
 
 def generate_project(user_prompt: str, request_id: str = "") -> dict:
+    try:
+        return _generate_project_impl(user_prompt, request_id)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {
+            "success": False,
+            "error": f"Unexpected generation error: {str(e)}",
+            "project_id": "error",
+            "llm_calls": 0,
+        }
+
+
+def _generate_project_impl(user_prompt: str, request_id: str = "") -> dict:
     mgr = get_manager()
 
     cache_key = _hash(user_prompt)
@@ -131,7 +152,7 @@ def generate_project(user_prompt: str, request_id: str = "") -> dict:
         try:
             # Appel LLM unique via CrewAI LLM.
             # La méthode .call() est l'interface unifiée commune à tous les fournisseurs :
-            #   - GeminiCompletion (préfixe "gemini/") utilise le SDK Google natif
+            #   - LiteLLM (préfixe "gemini/") utilise l'API Gemini
             #   - LiteLLM (préfixe "groq/") utilise l'API Groq
             # Contrairement à l'ancienne architecture multi-agents (CrewAI Agent/Crew/Tasks)
             # qui multipliait les appels via la boucle ReAct (max_iter=25 par agent),
@@ -142,16 +163,20 @@ def generate_project(user_prompt: str, request_id: str = "") -> dict:
             msg = str(e)
             last_error = msg[:300]
 
-            if "429" in msg or "quota" in msg.lower() or "resource_exhausted" in msg.lower():
+            if "429" in msg or "503" in msg or "quota" in msg.lower() or "resource_exhausted" in msg.lower() or "high demand" in msg.lower():
                 wait = _extract_wait(msg)
                 is_daily = _is_daily_quota(msg)
+                # On marque le modèle comme temporairement indisponible (429/503)
                 mgr.record_429(model, msg, wait, is_daily=is_daily)
+                
+                print(f"[{request_id}] Model {model} is busy (503/429). Retrying with another...")
                 if is_daily:
                     continue
                 if wait < 60:
                     time.sleep(wait + 1)
                     continue
                 else:
+                    # Si l'attente est trop longue, on passe immédiatement au suivant via la boucle for
                     continue
             else:
                 return {

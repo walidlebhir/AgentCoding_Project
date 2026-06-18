@@ -101,6 +101,10 @@ class Message:
         print(f"  {C('ℹ')}  {_dim(text)}")
 
     @staticmethod
+    def warn(text: str):
+        print(f"  {Y('⚠')}  {Y(text)}")
+
+    @staticmethod
     def error(text: str):
         print(f"  {R('✘')}  {R(text)}")
 
@@ -113,23 +117,30 @@ class TerminalUI:
 
     def show_welcome(self):
         term = shutil.get_terminal_size().columns
-        cy = lambda t: _rgb(56, 189, 248, t)
+        # Spring green color: RGB(109, 179, 63)
+        sp = lambda t: _rgb(109, 179, 63, t)
         te = lambda t: _rgb(34, 211, 238, t)
-        pu = lambda t: _rgb(129, 140, 248, t)
         g1 = lambda t: _rgb(75, 85, 99, t)
         g2 = lambda t: _rgb(156, 163, 175, t)
         g3 = lambda t: _rgb(209, 213, 219, t)
 
+        # Spring-like Logo with Leaf
         logo = (
             f"\n"
-            f"\n     {cy('███████╗██████╗ ██████╗ ██╗███╗   ██╗ ██████╗')}"
-            f"\n     {cy('██╔════╝██╔══██╗██╔══██╗██║████╗  ██║██╔════╝')}"
-            f"\n     {cy('███████╗██████╔╝██████╔╝██║██╔██╗ ██║██║  ███╗')}"
-            f"\n     {cy('╚════██║██╔══██╗██╔══██╗██║██║╚██╗██║██║   ██║')}"
-            f"\n     {cy('███████║██║  ██║██║  ██║██║██║ ╚████║╚██████╔╝')}"
-            f"\n     {cy('╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝')}"
+            f"\n                {sp('__')}"
+            f"\n              {sp('/  \\')}"
+            f"\n             {sp('(    )')}"
+            f"\n              {sp('\\__/')}"
+            f"\n               {sp('||')}"
             f"\n"
-            f"\n            {_bold(cy('SPRINGFORGE CLI'))}"
+            f"\n     {sp('███████╗██████╗ ██████╗ ██╗███╗   ██╗ ██████╗')}"
+            f"\n     {sp('██╔════╝██╔══██╗██╔══██╗██║████╗  ██║██╔════╝')}"
+            f"\n     {sp('███████╗██████╔╝██████╔╝██║██╔██╗ ██║██║  ███╗')}"
+            f"\n     {sp('╚════██║██╔══██╗██╔══██╗██║██║╚██╗██║██║   ██║')}"
+            f"\n     {sp('███████║██║  ██║██║  ██║██║██║ ╚████║╚██████╔╝')}"
+            f"\n     {sp('╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝')}"
+            f"\n"
+            f"\n            {_bold(sp('SPRINGFORGE CLI'))}"
             f"\n            {_dim('Your Spring Boot AI Coding Assistant')}"
         )
         print(logo)
@@ -142,8 +153,8 @@ class TerminalUI:
             f"\n  {g1('┌─')} {g2('STATUS')} {g1('─' * (term - 22))}┐"
             f"\n  {g1('│')}   {g2('▸')}  {g3('folder:')} {W(os.path.basename(self.current_dir))}  "
             f"{g2('·')}  {g3('mode:')} {Y(mode_str)}  "
-            f"{g2('·')}  {g3('model:')} {te(model_str)}  "
-            f"{g2('·')}  {g3('api:')} {cy(api_str)}"
+            f"{g2('·')}  {g3('model:')} {sp(model_str)}  "
+            f"{g2('·')}  {g3('api:')} {sp(api_str)}"
             f"\n  {g1('└─')}{g1('─' * (term - 22))}┘"
         )
         print(footer)
@@ -151,15 +162,15 @@ class TerminalUI:
         print(f"\n  {g2('▸')}  {_bold(g3('Getting Started'))}")
         print(f"  {g1('─' * (term - 4))}")
         tips = [
-            (f"{cy('✦')}  {g3('Generate projects')}  {_dim('—')}  {g2('Describe your Spring Boot app in plain English')}"),
-            (f"{cy('✦')}  {g3('Edit codebases')}    {_dim('—')}  {g2('Tell the agent what to change, it handles the rest')}"),
-            (f"{cy('✦')}  {g3('Add features')}      {_dim('—')}  {g2('New payment system? Just describe it naturally')}"),
-            (f"{cy('✦')}  {g3('Fix bugs')}          {_dim('—')}  {g2('Describe the issue, let AI find and patch it')}"),
+            (f"{sp('✦')}  {g3('Generate projects')}  {_dim('—')}  {g2('Describe your Spring Boot app in plain English')}"),
+            (f"{sp('✦')}  {g3('Edit codebases')}    {_dim('—')}  {g2('Tell the agent what to change, it handles the rest')}"),
+            (f"{sp('✦')}  {g3('Add features')}      {_dim('—')}  {g2('New payment system? Just describe it naturally')}"),
+            (f"{sp('✦')}  {g3('Fix bugs')}          {_dim('—')}  {g2('Describe the issue, let AI find and patch it')}"),
         ]
         for t in tips:
             print(f"  {t}")
         print(f"  {g1('─' * (term - 4))}")
-        print(f"  {_dim('Type')} {cy('/help')} {_dim('for all commands  ·  Type')} {cy('/exit')} {_dim('to quit')}")
+        print(f"  {_dim('Type')} {sp('/help')} {_dim('for all commands  ·  Type')} {sp('/exit')} {_dim('to quit')}")
         print()
         Message.divider()
 
@@ -180,17 +191,37 @@ class TerminalUI:
         term = shutil.get_terminal_size().columns
         print(f"\n  {_bold(W('Commands'))}")
         print(f"  {_dim('─' * (term - 2))}")
+        
+        print(f"\n  {_bold(Y('Project Generation'))}")
         cmds = [
             ("generate <desc>", "Generate a Spring Boot project"),
             ("edit <dir> <desc>", "Modify an existing project"),
             ("add <feature> [--path <dir>]", "Add a new feature"),
             ("fix <bug-desc> [--path <dir>]", "Fix a bug in the codebase"),
+        ]
+        for cmd, desc in cmds:
+            print(f"  {C(cmd):40s} {_dim(desc)}")
+        
+        print(f"\n  {_bold(Y('Authentication'))}")
+        auth_cmds = [
+            ("/login", "Login to your account"),
+            ("/register", "Create a new account"),
+            ("/logout", "Logout from current account"),
+            ("/user", "Show current user"),
+            ("/users", "List all stored users"),
+        ]
+        for cmd, desc in auth_cmds:
+            print(f"  {M(cmd):40s} {_dim(desc)}")
+        
+        print(f"\n  {_bold(Y('General'))}")
+        gen_cmds = [
             ("health", "Check API and provider status"),
             ("/help", "Show this help message"),
             ("/exit", "Exit the CLI"),
         ]
-        for cmd, desc in cmds:
+        for cmd, desc in gen_cmds:
             print(f"  {C(cmd):40s} {_dim(desc)}")
+        
         print(f"\n  {_bold(W('Examples'))}")
         print(f"  {_dim('─' * (term - 2))}")
         examples = [
@@ -198,6 +229,8 @@ class TerminalUI:
             ('edit ./my-project "add JWT authentication"', None),
             ('add "payment with Stripe" --path ./my-project', None),
             ('fix "NullPointerException in UserService"', None),
+            ('/login', None),
+            ('/register', None),
         ]
         for ex, _ in examples:
             print(f"  {GR(ex)}")

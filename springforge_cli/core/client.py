@@ -1,12 +1,14 @@
 import httpx
 from springforge_cli.utils.config import REQUEST_TIMEOUT, MAX_RETRIES
 from springforge_cli.utils.logger import error, warn, step
+from springforge_cli.core.token_storage import get_token_storage
 
 
 class ApiClient:
     def __init__(self, base_url: str):
         self.base_url = base_url.rstrip("/")
         self.client = httpx.Client(timeout=REQUEST_TIMEOUT)
+        self.token_storage = get_token_storage()
 
     def health(self) -> dict:
         try:
@@ -18,13 +20,20 @@ class ApiClient:
 
     def _request(self, method: str, endpoint: str, payload: dict) -> dict:
         url = f"{self.base_url}{endpoint}"
+        
+        # Add authorization header if token is available
+        headers = {}
+        token = self.token_storage.get_token()
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+        
         for attempt in range(1, MAX_RETRIES + 1):
             try:
                 step(f"Calling {endpoint} (attempt {attempt}/{MAX_RETRIES})")
                 if method == "POST":
-                    r = self.client.post(url, json=payload)
+                    r = self.client.post(url, json=payload, headers=headers)
                 else:
-                    r = self.client.get(url, params=payload)
+                    r = self.client.get(url, params=payload, headers=headers)
                 r.raise_for_status()
                 return r.json()
             except httpx.HTTPStatusError as e:

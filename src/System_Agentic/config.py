@@ -3,8 +3,8 @@ from dotenv import load_dotenv
 
 # Seul vestige de CrewAI dans l'architecture actuelle (v3).
 # On importe uniquement la classe LLM pour bénéficier de son abstraction unifiée :
-#   - Préfixe "gemini/" → utilise le provider natif Google (GeminiCompletion)
-#   - Préfixe "groq/"  → utilise LiteLLM en transparence
+#   - Préfixe "gemini/" → utilise LiteLLM pour Gemini
+#   - Préfixe "groq/"   → utilise LiteLLM pour Groq
 # Les anciens composants CrewAI (Agent, Crew, Task, Tool) ont été supprimés car
 # l'approche multi-agent consommait 12 à 40 appels LLM par projet, causant des
 # erreurs 429 par épuisement des quotas gratuits.
@@ -15,6 +15,7 @@ load_dotenv(dotenv_path)
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUTPUT_DIR = os.path.join(PROJECT_ROOT, "output")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 from src.System_Agentic.rate_limiter import PROVIDER_CONFIG
 

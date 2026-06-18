@@ -5,11 +5,10 @@ from enum import Enum
 _lock = threading.Lock()
 
 PROVIDER_CONFIG = {
-    "gemini/gemini-2.5-flash":        {"rpm": 5,   "tpd": 1500, "priority": 1, "key_var": "GEMINI_API_KEY"},
-    "gemini/gemini-3-flash-preview":  {"rpm": 30,  "tpd": 1500, "priority": 2, "key_var": "GEMINI_API_KEY"},
-    "gemini/gemini-2.5-flash-lite":   {"rpm": 10,  "tpd": 20,   "priority": 3, "key_var": "GEMINI_API_KEY"},
-    "groq/llama-3.3-70b-versatile":   {"rpm": 30,  "tpd": 100000, "priority": 4, "key_var": "api_key_LLM"},
-    "groq/mixtral-8x7b-32768":        {"rpm": 30,  "tpd": 100000, "priority": 5, "key_var": "api_key_LLM"},
+    "groq/llama-3.3-70b-versatile":   {"rpm": 30,  "tpd": 100000, "priority": 1, "key_var": "api_key_LLM"},
+    "groq/mixtral-8x7b-32768":        {"rpm": 30,  "tpd": 100000, "priority": 2, "key_var": "api_key_LLM"},
+    "gemini/gemini-1.5-flash":        {"rpm": 5,   "tpd": 1500, "priority": 3, "key_var": "GEMINI_API_KEY"},
+    "gemini/gemini-1.5-pro":          {"rpm": 30,  "tpd": 1500, "priority": 4, "key_var": "GEMINI_API_KEY"},
 }
 
 SORTED_MODELS = sorted(PROVIDER_CONFIG, key=lambda m: PROVIDER_CONFIG[m]["priority"])
